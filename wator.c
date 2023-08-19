@@ -6,11 +6,38 @@
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
 
-int main(int argc, char *argv[]) {
+void main_loop(SDL_Renderer *renderer) {
+     bool quit = false;
 
+     while(!quit)
+     {
+          SDL_Event e;
+
+          SDL_WaitEvent(&e);
+
+          if(e.type == SDL_QUIT) {
+               quit = true;
+          }
+
+          SDL_Log("render\n");
+
+          SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+          SDL_RenderClear(renderer);
+
+          SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
+
+          SDL_FRect box = {20, 20, 80, 80};
+          SDL_RenderFillRectF(renderer, &box);
+
+
+          SDL_RenderPresent(renderer);
+     }
+}
+
+int main(int argc, char *argv[]) {
      if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-          printf("SDL could not be initialized!\n"
-                 "SDL_Error: %s\n", SDL_GetError());
+          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
           return 0;
      }
 
@@ -19,47 +46,26 @@ int main(int argc, char *argv[]) {
                                            SDL_WINDOWPOS_UNDEFINED,
                                            SCREEN_WIDTH, SCREEN_HEIGHT,
                                            SDL_WINDOW_SHOWN);
+
      if (!window) {
-          printf("Window could not be created!\n"
-                 "SDL_Error: %s\n", SDL_GetError());
+          SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
      } else {
           SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
           if(!renderer) {
-               printf("Renderer could not be created!\n"
-                      "SDL_Error: %s\n", SDL_GetError());
+               SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
           } else {
-            bool quit = false;
+               main_loop(renderer);
 
-            while(!quit)
-            {
-                SDL_Event e;
+               SDL_DestroyRenderer(renderer);
+          }
 
-                SDL_WaitEvent(&e);
+          SDL_DestroyWindow(window);
+     }
 
-                if(e.type == SDL_QUIT) {
-                    quit = true;
-                }
-
-                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-                SDL_RenderClear(renderer);
+     SDL_Quit();
 
 
-                // rendering goes here
-
-                SDL_RenderPresent(renderer);
-            }
-
-            SDL_DestroyRenderer(renderer);
-        }
-
-        SDL_DestroyWindow(window);
-    }
-
-    SDL_Quit();
-
-
-    printf("end run.\n");
-    return 0;
+     SDL_Log("end run.\n");
+     return 0;
 }
