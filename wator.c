@@ -3,13 +3,21 @@
 
 #include <SDL.h>
 
-#define SCREEN_WIDTH    800
-#define SCREEN_HEIGHT   600
+#define BOARD_WIDTH 100
+#define BOARD_HEIGHT 100
 
-#define BOARD_WIDTH 10
-#define BOARD_HEIGHT 10
+#define TILE_SIZE 2
+
+#define SCREEN_WIDTH    (BOARD_WIDTH * TILE_SIZE)
+#define SCREEN_HEIGHT   (BOARD_HEIGHT * TILE_SIZE)
 
 int board[BOARD_WIDTH * BOARD_HEIGHT];
+
+void init() {
+     for(int ii = 0; ii < BOARD_WIDTH * BOARD_HEIGHT; ii++) {
+          board[ii] = rand() % 3;
+     }
+}
 
 Uint32 update(Uint32 interval, void* param) {
      SDL_Log("update");
@@ -27,8 +35,6 @@ void render(SDL_Renderer *renderer) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
                int cel = board[xx + yy * BOARD_WIDTH];
 
-               SDL_Log("%d, %d = %d", xx, yy, cel);
-
                if (cel == 0) {
                     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
                } if (cel == 1) {
@@ -39,10 +45,10 @@ void render(SDL_Renderer *renderer) {
 
                SDL_FRect box;
 
-               box.x = xx * 20;
-               box.y = yy * 20;
-               box.w = 20;
-               box.h = 20;
+               box.x = xx * TILE_SIZE;
+               box.y = yy * TILE_SIZE;
+               box.w = TILE_SIZE;
+               box.h = TILE_SIZE;
 
                SDL_RenderFillRectF(renderer, &box);
           }
@@ -70,9 +76,7 @@ void main_loop(SDL_Renderer *renderer) {
 }
 
 int main(int argc, char *argv[]) {
-     for(int ii = 0; ii < BOARD_WIDTH * BOARD_HEIGHT; ii++) {
-          board[ii] = rand() % 3;
-     }
+     init();
 
      if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
           SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
