@@ -19,15 +19,15 @@ int get_board(int x, int y) {
 void init() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
-               set_board(xx, yy, rand() % 2);
+
+               if (rand() % 100 < 2) {
+                    set_board(xx, yy, CELL_FISH);
+               }
           }
      }
 }
 
-
-Uint32 update(Uint32 interval, void* param) {
-     SDL_Log("update\n");
-
+void update() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
                if (get_board(xx, yy) == CELL_FISH) {
@@ -64,13 +64,9 @@ Uint32 update(Uint32 interval, void* param) {
                }
           }
      }
-
-     return interval;
 }
 
 void render(SDL_Renderer *renderer) {
-     SDL_Log("render\n");
-
      SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
      SDL_RenderClear(renderer);
 

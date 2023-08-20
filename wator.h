@@ -1,5 +1,5 @@
-#define BOARD_WIDTH 100
-#define BOARD_HEIGHT 100
+#define BOARD_WIDTH 200
+#define BOARD_HEIGHT 200
 
 #define TILE_SIZE 2
 
@@ -7,5 +7,5 @@
 #define SCREEN_HEIGHT   (BOARD_HEIGHT * TILE_SIZE)
 
 void init();
-Uint32 update(Uint32 interval, void* param);
+void update();
 void render(SDL_Renderer *renderer);

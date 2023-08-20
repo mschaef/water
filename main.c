@@ -4,6 +4,15 @@
 
 #include "wator.h"
 
+Uint32 renderEvent;
+
+void send_render_event() {
+     SDL_Event event;
+     SDL_memset(&event, 0, sizeof(event));
+     event.type = renderEvent;
+     SDL_PushEvent(&event);
+}
+
 void main_loop(SDL_Renderer *renderer) {
      bool quit = false;
 
@@ -21,6 +30,13 @@ void main_loop(SDL_Renderer *renderer) {
      }
 }
 
+Uint32 invoke_update(Uint32 interval, void* param) {
+     update();
+     send_render_event();
+
+     return interval;
+}
+
 int main(int argc, char *argv[]) {
      init();
 
@@ -28,6 +44,8 @@ int main(int argc, char *argv[]) {
           SDL_LogError(SDL_LOG_CATEGORY_ERROR, "SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
           return 0;
      }
+
+     renderEvent = SDL_RegisterEvents(1);
 
      SDL_Window *window = SDL_CreateWindow("Wator",
                                            SDL_WINDOWPOS_UNDEFINED,
@@ -43,7 +61,7 @@ int main(int argc, char *argv[]) {
           if(!renderer) {
                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
           } else {
-               SDL_TimerID updateTid = SDL_AddTimer(1000, update, NULL);
+               SDL_TimerID updateTid = SDL_AddTimer(100, invoke_update, NULL);
 
                if (!updateTid) {
                     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Update timer could not be created! SDL_Error: %s\n", SDL_GetError());
