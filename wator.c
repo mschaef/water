@@ -27,34 +27,40 @@ void init() {
      }
 }
 
+static int add_coord(int c, int dc, int limit) {
+     int c2 = c + dc;
+
+     if (c2 >= limit) {
+          c2 = 0;
+     } else if (c2 < 0) {
+          c2 = limit - 1;
+     }
+
+     return c2;
+}
+
+static void rand_direction(int *dx, int *dy) {
+     *dx = 0;
+     *dy = 0;
+
+     switch(rand() % 4) {
+     case 0: *dx = 0; *dy = -1; break;
+     case 1: *dx = 1; *dy = 0; break;
+     case 2: *dx = 0; *dy = 1; break;
+     case 3: *dx = -1; *dy = 1; break;
+     }
+}
+
 void update() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
                if (get_board(xx, yy) == CELL_FISH) {
                     int dx, dy;
 
-                    switch(rand() % 4) {
-                    case 0: dx = 0; dy = -1; break;
-                    case 1: dx = 1; dy = 0; break;
-                    case 2: dx = 0; dy = 1; break;
-                    case 3: dx = -1; dy = 1; break;
-                    }
+                    rand_direction(&dx, &dy);
 
-                    int x2 = xx + dx;
-
-                    if (x2 >= BOARD_WIDTH) {
-                         x2 = 0;
-                    } else if (x2 < 0) {
-                         x2 = BOARD_WIDTH - 1;
-                    }
-
-                    int y2 = yy + dy;
-
-                    if (y2 >= BOARD_HEIGHT) {
-                         y2 = 0;
-                    } else if (y2 < 0) {
-                         y2 = BOARD_HEIGHT - 1;
-                    }
+                    int x2 = add_coord(xx, dx, BOARD_WIDTH);
+                    int y2 = add_coord(yy, dy, BOARD_HEIGHT);
 
                     if (get_board(x2, y2) == CELL_EMPTY) {
                          set_board(xx, yy, CELL_EMPTY);
