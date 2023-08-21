@@ -8,6 +8,35 @@ int board[BOARD_WIDTH * BOARD_HEIGHT];
 #define CELL_FISH 1
 #define CELL_SHARK 2
 
+#define CELL_TYPE 0xFF
+
+int cell_type(int cel) {
+     return cel & CELL_TYPE;
+}
+
+int fish_age(int cel) {
+     return cel >> 8;
+}
+
+int make_fish(int age) {
+     return (age << 8) | CELL_FISH;
+}
+
+int make_shark(int energy) {
+     return (energy << 8) | CELL_SHARK;
+}
+
+int shark_energy(int cel) {
+     return cel >> 8;
+}
+
+#define FISH_SPAWN 8
+
+#define SHARK_INITIAL_ENERGY 100
+#define FISH_MEAL_ENERGY 20
+
+#define SHARK_SPAWN_ENERGY 200
+
 void set_board(int x, int y, int cel) {
      board[x + y * BOARD_WIDTH] = cel;
 }
@@ -19,9 +48,12 @@ int get_board(int x, int y) {
 void init() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
+               int r = rand() % 500;
 
-               if (rand() % 100 < 2) {
-                    set_board(xx, yy, CELL_FISH);
+               if (r < 1) {
+                    set_board(xx, yy, make_fish(0));
+               } else if (r < 2) {
+                    set_board(xx, yy, make_shark(SHARK_INITIAL_ENERGY));
                }
           }
      }
@@ -54,17 +86,46 @@ static void rand_direction(int *dx, int *dy) {
 void update() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
-               if (get_board(xx, yy) == CELL_FISH) {
-                    int dx, dy;
+               int cel = get_board(xx, yy);
 
-                    rand_direction(&dx, &dy);
+               int dx, dy;
+               rand_direction(&dx, &dy);
 
-                    int x2 = add_coord(xx, dx, BOARD_WIDTH);
-                    int y2 = add_coord(yy, dy, BOARD_HEIGHT);
+               int x2 = add_coord(xx, dx, BOARD_WIDTH);
+               int y2 = add_coord(yy, dy, BOARD_HEIGHT);
+
+               if (cell_type(cel) == CELL_FISH) {
+                    int age = fish_age(cel);
 
                     if (get_board(x2, y2) == CELL_EMPTY) {
+                         if (age >= FISH_SPAWN) {
+                              set_board(xx, yy, make_fish(0));
+                              set_board(x2, y2, make_fish(0));
+                         } else {
+                              set_board(xx, yy, CELL_EMPTY);
+                              set_board(x2, y2, make_fish(age + 1));
+                         }
+                    }
+
+               } else if (cell_type(cel) == CELL_SHARK) {
+                    int energy = shark_energy(cel);
+
+                    if (get_board(x2, y2) == CELL_FISH) {
                          set_board(xx, yy, CELL_EMPTY);
-                         set_board(x2, y2, CELL_FISH);
+                         set_board(x2, y2, make_shark(energy + FISH_MEAL_ENERGY));
+
+                    } else if (get_board(x2, y2) == CELL_EMPTY) {
+                         set_board(xx, yy, CELL_EMPTY);
+                         if (energy > 1) {
+                              set_board(x2, y2, make_shark(energy - 1));
+                         }
+
+                    } else {
+                         if (energy > 1) {
+                              set_board(xx, yy, make_shark(energy - 1));
+                         } else {
+                              set_board(xx, yy, CELL_EMPTY);
+                         }
                     }
 
                }
@@ -80,11 +141,13 @@ void render(SDL_Renderer *renderer) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
                int cel = get_board(xx, yy);
 
-               if (cel == CELL_EMPTY) {
+               int t = cell_type(cel);
+
+               if (t == CELL_EMPTY) {
                     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
-               } if (cel == CELL_FISH) {
+               } if (t == CELL_FISH) {
                     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
-               } if (cel == CELL_SHARK) {
+               } if (t == CELL_SHARK) {
                     SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
                }
 
