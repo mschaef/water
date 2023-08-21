@@ -33,7 +33,7 @@ int shark_energy(int cel) {
 #define FISH_SPAWN 8
 
 #define SHARK_INITIAL_ENERGY 100
-#define FISH_MEAL_ENERGY 20
+#define FISH_MEAL_ENERGY 100
 
 #define SHARK_SPAWN_ENERGY 200
 
@@ -110,15 +110,26 @@ void update() {
                } else if (cell_type(cel) == CELL_SHARK) {
                     int energy = shark_energy(cel);
 
-                    if (get_board(x2, y2) == CELL_FISH) {
+                    if (get_board(x2, y2) == CELL_EMPTY) {
+
+
+                         if (energy > SHARK_SPAWN_ENERGY) {
+                              set_board(xx, yy, make_shark(energy /2));
+                              set_board(x2, y2, make_shark(energy /2));
+
+                         } else if (energy > 1) {
+                              set_board(xx, yy, CELL_EMPTY);
+                              set_board(x2, y2, make_shark(energy - 1));
+
+                         } else {
+                              set_board(xx, yy, CELL_EMPTY);
+                         }
+
+
+                    } else if (get_board(x2, y2) == CELL_FISH) {
+                         SDL_Log("Yum %d, %d", x2, y2);
                          set_board(xx, yy, CELL_EMPTY);
                          set_board(x2, y2, make_shark(energy + FISH_MEAL_ENERGY));
-
-                    } else if (get_board(x2, y2) == CELL_EMPTY) {
-                         set_board(xx, yy, CELL_EMPTY);
-                         if (energy > 1) {
-                              set_board(x2, y2, make_shark(energy - 1));
-                         }
 
                     } else {
                          if (energy > 1) {
