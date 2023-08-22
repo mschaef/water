@@ -6,6 +6,7 @@
 
 void main_loop(SDL_Renderer *renderer) {
      bool quit = false;
+     bool paused = false;
 
      int ii = 0;
 
@@ -17,10 +18,19 @@ void main_loop(SDL_Renderer *renderer) {
                case SDL_QUIT:
 					quit = true;
 					break;
+               case SDL_KEYDOWN:
+                    if (e.key.keysym.sym == SDLK_p) {
+                         paused = !paused;
+                    } else if (e.key.keysym.sym == SDLK_q) {
+                         quit = true;
+                    }
+                    break;
                }
           }
 
-          update();
+          if (!paused) {
+               update();
+          }
 
           if (ii % 8 == 0) {
                SDL_RenderClear(renderer);
