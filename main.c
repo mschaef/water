@@ -26,7 +26,12 @@ void main_loop(SDL_Renderer *renderer) {
                quit = true;
           }
 
+          SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+          SDL_RenderClear(renderer);
+
           render(renderer);
+
+          SDL_RenderPresent(renderer);
      }
 }
 

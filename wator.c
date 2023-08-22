@@ -148,9 +148,6 @@ void update() {
 }
 
 void render(SDL_Renderer *renderer) {
-     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-     SDL_RenderClear(renderer);
-
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
                int cel = get_board(xx, yy);
@@ -175,7 +172,4 @@ void render(SDL_Renderer *renderer) {
                SDL_RenderFillRectF(renderer, &box);
           }
      }
-
-
-     SDL_RenderPresent(renderer);
 }
