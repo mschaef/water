@@ -1,5 +1,7 @@
 #include <SDL.h>
 
+// See https://beltoforion.de/en/wator/ for rules
+
 #include "wator.h"
 
 int board[BOARD_WIDTH * BOARD_HEIGHT];
@@ -30,12 +32,12 @@ int shark_energy(int cel) {
      return cel >> 8;
 }
 
-#define FISH_SPAWN 6
+#define FISH_SPAWN 12
 
 #define SHARK_INITIAL_ENERGY 100
 #define FISH_MEAL_ENERGY 10
 
-#define SHARK_SPAWN_ENERGY 200
+#define SHARK_SPAWN_ENERGY 250
 
 void set_board(int x, int y, int cel) {
      board[x + y * BOARD_WIDTH] = cel;
@@ -48,11 +50,11 @@ int get_board(int x, int y) {
 void init() {
      for(int xx = 0; xx < BOARD_WIDTH; xx++) {
           for(int yy = 0; yy < BOARD_HEIGHT; yy++) {
-               int r = rand() % 500;
+               int r = rand() % 1000;
 
-               if (r < 1) {
+               if (r < 5) {
                     set_board(xx, yy, make_fish(0));
-               } else if (r < 2) {
+               } else if (r < 6) {
                     set_board(xx, yy, make_shark(SHARK_INITIAL_ENERGY));
                }
           }
