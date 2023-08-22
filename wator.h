@@ -3,8 +3,10 @@
 
 #define TILE_SIZE 1
 
-#define SCREEN_WIDTH    (BOARD_WIDTH * TILE_SIZE)
-#define SCREEN_HEIGHT   (BOARD_HEIGHT * TILE_SIZE)
+#define FISH_SPAWN 24
+#define SHARK_INITIAL_ENERGY 100
+#define FISH_MEAL_ENERGY 10
+#define SHARK_SPAWN_ENERGY 250
 
 void init();
 void update();

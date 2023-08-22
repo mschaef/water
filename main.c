@@ -4,6 +4,9 @@
 
 #include "wator.h"
 
+#define SCREEN_WIDTH    (BOARD_WIDTH * TILE_SIZE)
+#define SCREEN_HEIGHT   (BOARD_HEIGHT * TILE_SIZE)
+
 void main_loop(SDL_Renderer *renderer) {
      bool quit = false;
      bool paused = false;

@@ -32,13 +32,6 @@ int shark_energy(int cel) {
      return cel >> 8;
 }
 
-#define FISH_SPAWN 24
-
-#define SHARK_INITIAL_ENERGY 100
-#define FISH_MEAL_ENERGY 10
-
-#define SHARK_SPAWN_ENERGY 250
-
 void set_board(int x, int y, int cel) {
      board[x + y * BOARD_WIDTH] = cel;
 }
