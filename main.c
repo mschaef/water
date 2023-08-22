@@ -7,6 +7,8 @@
 void main_loop(SDL_Renderer *renderer) {
      bool quit = false;
 
+     int ii = 0;
+
      while(!quit)
      {
           SDL_Event e;
@@ -18,15 +20,15 @@ void main_loop(SDL_Renderer *renderer) {
                }
           }
 
-          SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-          SDL_RenderClear(renderer);
-
           update();
-          render(renderer);
 
-          SDL_RenderPresent(renderer);
-
-          SDL_Delay(10);
+          if (ii % 8 == 0) {
+               SDL_RenderClear(renderer);
+               render(renderer);
+               SDL_RenderPresent(renderer);
+               SDL_Delay(50);
+          }
+          ii++;
      }
 }
 
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
      if (!window) {
           SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
      } else {
-          SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+          SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,  SDL_RENDERER_PRESENTVSYNC);
 
           if(!renderer) {
                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
