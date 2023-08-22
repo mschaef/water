@@ -25,6 +25,8 @@ void main_loop(SDL_Renderer *renderer) {
           render(renderer);
 
           SDL_RenderPresent(renderer);
+
+          SDL_Delay(10);
      }
 }
 
