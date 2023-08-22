@@ -4,42 +4,28 @@
 
 #include "wator.h"
 
-Uint32 renderEvent;
-
-void send_render_event() {
-     SDL_Event event;
-     SDL_memset(&event, 0, sizeof(event));
-     event.type = renderEvent;
-     SDL_PushEvent(&event);
-}
-
 void main_loop(SDL_Renderer *renderer) {
      bool quit = false;
 
      while(!quit)
      {
           SDL_Event e;
-
-          SDL_WaitEvent(&e);
-
-          if(e.type == SDL_QUIT) {
-               quit = true;
+          while ( SDL_PollEvent( &e ) != 0 ) {
+               switch (e.type) {
+               case SDL_QUIT:
+					quit = true;
+					break;
+               }
           }
 
           SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
           SDL_RenderClear(renderer);
 
+          update();
           render(renderer);
 
           SDL_RenderPresent(renderer);
      }
-}
-
-Uint32 invoke_update(Uint32 interval, void* param) {
-     update();
-     send_render_event();
-
-     return interval;
 }
 
 int main(int argc, char *argv[]) {
@@ -50,8 +36,6 @@ int main(int argc, char *argv[]) {
           return 0;
      }
 
-     renderEvent = SDL_RegisterEvents(1);
-
      SDL_Window *window = SDL_CreateWindow("Wator",
                                            SDL_WINDOWPOS_UNDEFINED,
                                            SDL_WINDOWPOS_UNDEFINED,
@@ -61,18 +45,12 @@ int main(int argc, char *argv[]) {
      if (!window) {
           SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
      } else {
-          SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+          SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
           if(!renderer) {
                SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
           } else {
-               SDL_TimerID updateTid = SDL_AddTimer(100, invoke_update, NULL);
-
-               if (!updateTid) {
-                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Update timer could not be created! SDL_Error: %s\n", SDL_GetError());
-               } else {
-                    main_loop(renderer);
-               }
+               main_loop(renderer);
 
                SDL_DestroyRenderer(renderer);
           }
